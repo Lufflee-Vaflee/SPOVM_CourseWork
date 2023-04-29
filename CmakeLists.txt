@@ -9,11 +9,12 @@ set(CMAKE_PROJECT_INCLUDE_BEFORE ON)
 
 set(SOURCES 
     "${PROJECT_SOURCE_DIR}/main.cpp"
+    "${PROJECT_SOURCE_DIR}/UI.cpp"
     )
 
-#set(HEADERS
-#    "${PROJECT_SOURCE_DIR}/ntp4.h"
-#    )
+set(HEADERS
+    "${PROJECT_SOURCE_DIR}/UI.hpp"
+    )
 
 #configure_file(
 #    "${PROJECT_SOURCE_DIR}/config.h.in"
@@ -25,7 +26,7 @@ include_directories(${CURSES_INCLUDE_DIR})
 
 set(CURSES_CFLAGS "-lpanel" "-lncurses")
 
-set(CURSES_LIBRARIES "curses" "panel")
+set(CURSES_LIBRARIES "curses" "panel" "menu" "form")
 
 add_executable(${PROJECT_NAME}
     ${SOURCES}
