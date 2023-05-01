@@ -184,14 +184,6 @@ class panelManager
 
     chtype getcorner(int x, int y, bool U, bool B, bool L, bool R)
     {
-        auto test1 = mvinch(y - 1, x);
-        auto test2 = mvinch(y + 1, x);
-        auto test3 = mvinch(y, x - 1);
-        auto test4 = mvinch(y, x + 1);
-
-        auto test5 = ACS_VLINE | COLOR_PAIR(1);
-        auto test6 = ACS_HLINE | COLOR_PAIR(1);
-
 
         U = (mvinch(y - 1, x) == (ACS_VLINE | COLOR_PAIR(1))) || U;
         B = (mvinch(y + 1, x) == (ACS_VLINE | COLOR_PAIR(1))) || B;
