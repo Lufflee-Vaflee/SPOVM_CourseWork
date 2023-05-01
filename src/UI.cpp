@@ -10,8 +10,8 @@ std::string UI::status = "";
 WINDOW* UI::up_bar = nullptr;
 WINDOW* UI::status_bar = nullptr;
 
-dirPanel* UI::left = nullptr;
-dirPanel* UI::right = nullptr;
+panelManager* UI::left = nullptr;
+panelManager* UI::right = nullptr;
 
 UI::UI()
 {
@@ -29,15 +29,15 @@ UI::UI()
 
     int half_width = COLS / 2;
 
-    UI::up_bar = newwin(1, COLS, 0, 0);
+    UI::up_bar = subwin(stdscr, 1, COLS, 0, 0);
     wbkgd(UI::up_bar, COLOR_PAIR(1));
     mvwprintw(UI::up_bar, 0, COLS - strlen(APP_NAME) - 1, "%s", APP_NAME);
     wrefresh(UI::up_bar);
 
     UI::status_bar = create_newwin(3, COLS, LINES - 3, 0);
 
-    UI::left = new dirPanel(LINES - 3, COLS / 2 + 1, 1, 0);
-    UI::right = new dirPanel(LINES - 3, half_width, 1, half_width, ACS_TTEE, ACS_URCORNER, ACS_BTEE, ACS_RTEE);
+    UI::left = new panelManager(stdscr, LINES - 3, COLS / 2 + 1, 1, 0);
+    UI::right = new panelManager(stdscr, LINES - 3, half_width, 1, half_width, ACS_TTEE, ACS_URCORNER, ACS_BTEE, ACS_RTEE);
 }
 
 
@@ -59,7 +59,7 @@ WINDOW* UI::create_newwin(int height, int width, int starty, int startx, chtype 
 {
     WINDOW *local_win;
 
-	local_win = newwin(height, width, starty, startx);
+	local_win = subwin(stdscr, height, width, starty, startx);
     wattron(local_win, COLOR_PAIR(1));
     wbkgd(local_win, COLOR_PAIR(1));
 	wborder(local_win, 0, 0, 0, 0, lu_corner, ru_corner, ll_corner, rl_corner);

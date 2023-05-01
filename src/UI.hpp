@@ -3,7 +3,7 @@
 #include <ncurses.h>
 #include <exception>
 #include <cstring>
-#include "tab.hpp"
+#include "panel_manager.hpp"
 #include <string>
 
 namespace YAExplorer
@@ -26,8 +26,8 @@ class UI            //singleton
     static WINDOW* up_bar;             //in-fact all if them are static, its not marked by static cause their initialization should be after UI constructor;
     static WINDOW* status_bar;
 
-    static dirPanel* left;
-    static dirPanel* right;
+    static panelManager* left;
+    static panelManager* right;
 
     static std::string status;
 
