@@ -4,6 +4,7 @@
 #include <exception>
 #include <cstring>
 #include "tab.hpp"
+#include <string>
 
 namespace YAExplorer
 {
@@ -14,44 +15,21 @@ namespace YAExplorer
 
 #define APP_NAME "Yet Another Explorer"
 
-class UI
+class UI            //singleton
 {
     protected:
 
-    UI()
-    {
-        //if (has_colors() == false)
-        //    throw new std::exception();
-
-        initscr();
-        clear();
-        refresh();
-        noecho();
-        curs_set(curs_invisible);
-        start_color();
-
-        init_pair(1, COLOR_CYAN, COLOR_BLACK);
-
-        int half_width = COLS / 2;
-
-        up_bar = newwin(1, COLS, 0, 0);
-        wbkgd(up_bar, COLOR_PAIR(1));
-        mvwprintw(up_bar, 0, COLS - strlen(APP_NAME) - 1, "%s", APP_NAME);
-        wrefresh(up_bar);
-    
-        status_bar = create_newwin(3, COLS, LINES - 3, 0);
-
-        left = new dirPanel(LINES - 3, COLS / 2 + 1, 1, 0);
-        right = new dirPanel(LINES - 3, half_width, 1, half_width, ACS_TTEE, ACS_URCORNER, ACS_BTEE, ACS_RTEE);
-    }
+    UI();
 
     static UI* instance;
 
-    WINDOW* up_bar;
-    WINDOW* status_bar;
+    static WINDOW* up_bar;             //in-fact all if them are static, its not marked by static cause their initialization should be after UI constructor;
+    static WINDOW* status_bar;
 
-    dirPanel* left;
-    dirPanel* right;
+    static dirPanel* left;
+    static dirPanel* right;
+
+    static std::string status;
 
     public:
 
@@ -64,19 +42,15 @@ class UI
     static WINDOW* create_newwin(int height, int width, int starty, int startx, chtype lu_corner = ACS_ULCORNER, chtype ru_corner = ACS_URCORNER, chtype ll_corner = ACS_LLCORNER, chtype rl_corner = ACS_LRCORNER);
     static void destroy_win(WINDOW *local_win);
 
+    static void setStatus(std::string message);
+    static std::string getStatus();
+
+    static bool changeSide(); // 0 - left, 1 - right;
+
 
     private:
 
-    ~UI()
-    {
-        echo();
-        curs_set(curs_visible);
-        destroy_win(up_bar);
-        destroy_win(status_bar);
-        delete left;
-        delete right;
-        endwin();
-    }
+    ~UI();
 };
 
 

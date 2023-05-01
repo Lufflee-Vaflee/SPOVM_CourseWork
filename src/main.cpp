@@ -6,7 +6,7 @@ int main()
 {
     auto UI_ = YAExplorer::UI::GetInstance();
 
-    char* str;
+    UI_->setStatus("test message");
 
     getch();
 
