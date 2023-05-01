@@ -14,6 +14,7 @@ set(SOURCES
 
 set(HEADERS
     "${PROJECT_SOURCE_DIR}/UI.hpp"
+    "${PROJECT_SOURCE_DIR}/tab.hpp"
     )
 
 #configure_file(

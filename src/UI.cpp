@@ -5,6 +5,7 @@ namespace YAExplorer
 
 UI* UI::instance = nullptr;
 
+
 UI* UI::GetInstance()
 {
     return instance == nullptr ? instance = new UI() : instance;
