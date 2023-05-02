@@ -1,8 +1,9 @@
 #include "UI.hpp"
-#include "stuff.hpp"
 
 namespace YAExplorer
 {
+
+extern std::filesystem::path ROOT_DIR;
 
 UI* UI::instance = nullptr;
 
@@ -38,7 +39,7 @@ UI::UI()
     UI::status_bar = create_newwin(3, COLS, LINES - 3, 0);
 
     UI::left = new panelManager(stdscr, LINES - 3, COLS / 2 + 1, 1, 0);
-    UI::right = new panelManager(stdscr, LINES - 3, half_width, 1, half_width);
+    UI::right = new panelManager(stdscr, LINES - 3, half_width, 1, half_width, ROOT_DIR);
 }
 
 

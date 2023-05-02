@@ -52,6 +52,12 @@ chtype getcorner(int x, int y, bool U, bool B, bool L, bool R)
     case 0b1010:
         result = ACS_LRCORNER;
         break;
+    case 0b1100:
+        result = ACS_VLINE;
+        break;
+    case 0b0011:
+        result = ACS_HLINE;
+        break;
     default:
         return 0;
         break;
@@ -74,6 +80,28 @@ void smart_wborder(WINDOW* win)
 
     wattron(win, COLOR_PAIR(1));
     wborder(win, 0, 0, 0, 0, ul, ur, bl, br);
+    wattroff(win, COLOR_PAIR(1));
+}
+
+void smart_wborder_no_bottom(WINDOW* win)
+{
+    int x, y;
+    int maxx, maxy;
+    getbegyx(win, y, x);
+    getmaxyx(win, maxy, maxx);
+
+    wattron(win, COLOR_PAIR(1));
+    wborder(win, ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ');
+    wattroff(win, COLOR_PAIR(1));
+    wrefresh(win);
+
+    chtype ul = getcorner(x, y, false, true, false, true);
+    chtype ur = getcorner(x + maxx - 1, y, false, true, true, false);
+    chtype bl = getcorner(x, y + maxy - 1, true, false, false, false);
+    chtype br = getcorner(x + maxx - 1, y + maxy - 1, true, false, false, false);
+
+    wattron(win, COLOR_PAIR(1));
+    wborder(win, 0, 0, 0, ' ', ul, ur, bl, br);
     wattroff(win, COLOR_PAIR(1));
 }
 

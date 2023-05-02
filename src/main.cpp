@@ -1,15 +1,19 @@
 #include "UI.hpp"
 
-const std::filesystem::path OS_BASE_DIR = std::filesystem::path("/"); 
-std::filesystem::path LAUNCH_DIR;
-
 std::string& extract_dir(std::string& path);
+
+namespace YAExplorer
+{
+    std::filesystem::path LAUNCH_DIR;
+    std::filesystem::path ROOT_DIR;
+}
 
 int main(int argc, char* argv[])
 {
     std::string dir(argv[0]);
     dir = extract_dir(dir);
-    LAUNCH_DIR = std::filesystem::path(dir);
+    YAExplorer::LAUNCH_DIR = std::filesystem::path(dir);
+    YAExplorer::ROOT_DIR = YAExplorer::LAUNCH_DIR.root_directory();
 
     auto UI_ = YAExplorer::UI::GetInstance();
 
@@ -29,7 +33,6 @@ std::string& extract_dir(std::string& path)
         path.erase(temp);
         temp--;
     }
-
     path.erase(temp);
 
     return path;

@@ -29,12 +29,14 @@ namespace YAExplorer
 //current tab always have TAB_SIZE_MAX while other tabs must shrink corresponding to panel width
 //add check for allowoble minimal panel size - ? 
 
+extern std::filesystem::path LAUNCH_DIR;
+
 
 class panelManager
 {
     public:
 
-    panelManager(WINDOW* parent, int height, int width, int starty, int startx);
+    panelManager(WINDOW* parent, int height, int width, int starty, int startx, std::filesystem::path start_dir = LAUNCH_DIR);
 
     panelManager(panelManager &other) = delete;
     void operator=(const panelManager&) = delete;
@@ -53,7 +55,6 @@ class panelManager
     int height;
     int width;
 
-    int tabs_common_size = strlen(NEW_TAB);
     int tabs_size = TAB_SIZE_MAX;
 
 

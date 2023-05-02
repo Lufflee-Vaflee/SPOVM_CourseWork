@@ -7,6 +7,7 @@
 #include <string>
 
 #include "panel_manager.hpp"
+#include "stuff.hpp"
 
 namespace YAExplorer
 {
