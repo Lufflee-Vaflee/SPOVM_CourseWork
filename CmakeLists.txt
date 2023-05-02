@@ -10,6 +10,7 @@ set(CMAKE_PROJECT_INCLUDE_BEFORE ON)
 set(SOURCES 
     "${PROJECT_SOURCE_DIR}/main.cpp"
     "${PROJECT_SOURCE_DIR}/UI.cpp"
+    "${PROJECT_SOURCE_DIR}/panel_manager.cpp"
     "${PROJECT_SOURCE_DIR}/stuff.cpp"
     )
 

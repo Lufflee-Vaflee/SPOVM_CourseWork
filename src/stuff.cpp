@@ -97,5 +97,26 @@ void destroy_win(WINDOW *local_win)
 	wrefresh(local_win);
 	delwin(local_win);
 }
+
+std::string supress(std::string str, unsigned int to)
+{
+    if(str.size() <= to)
+        return str;
+
+    int overflow = str.size() - to;
+    overflow = 2; 
+
+    std::string result("");
+    int first_part_size = (to - overflow) / 2;
+    int second_part_size = (to - overflow) - first_part_size;
+    result += str.substr(0, first_part_size);
+
+    result += "..";
+
+    result += str.substr(str.size() - second_part_size, second_part_size);
+
+    return result;
+}
+
 }
 
