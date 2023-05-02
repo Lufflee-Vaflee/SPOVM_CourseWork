@@ -1,15 +1,17 @@
 #pragma once
 
 #include <ncurses.h>
-#include <panel.h>
+
 #include <exception>
 #include <string>
 #include <list>
 #include <filesystem>
 #include <cstring>
 
+#include "stuff.hpp"
+
 #define TAB_SIZE_DEFAULT 20
-#define TAB_SIZE_MAX 80
+#define TAB_SIZE_MAX 30
 #define NEW_TAB  "NEW TAB"
 
 namespace YAExplorer
@@ -62,16 +64,8 @@ class panelManager
         //wattroff(default_tab, COLOR_PAIR(1));
         //wrefresh(default_tab);
 
-        registrate_tab("asdfsdihfvo123dfn");
+        registrate_tab("");
         registrate_tab("avafsad");
-        registrate_tab("||||");
-        registrate_tab("bwnjnihwfowjer");
-        registrate_tab("2");
-        registrate_tab("fdkmw");
-        registrate_tab("wnjfvnoijef");
-        registrate_tab("avnwjf");
-        registrate_tab("wkjnvefpwe");
-        registrate_tab("vwjnfj wojei weoijpoknvw wevjpf");
 
         redraw_tabs();
 
@@ -165,78 +159,6 @@ class panelManager
 	    delwin(current);
     }
 
-    void smart_wborder(WINDOW* win)
-    {
-        int x, y;
-        int maxx, maxy;
-        getbegyx(win, y, x);
-        getmaxyx(win, maxy, maxx);
-
-        chtype ul = getcorner(x, y, false, true, false, true);
-        chtype ur = getcorner(x + maxx - 1, y, false, true, true, false);
-        chtype bl = getcorner(x, y + maxy - 1, true, false, false, true);
-        chtype br = getcorner(x + maxx - 1, y + maxy - 1, true, false, true, false);
-
-        wattron(win, COLOR_PAIR(1));
-        wborder(win, 0, 0, 0, 0, ul, ur, bl, br);
-        wattroff(win, COLOR_PAIR(1));
-    }
-
-    chtype getcorner(int x, int y, bool U, bool B, bool L, bool R)
-    {
-
-        U = (mvinch(y - 1, x) == (ACS_VLINE | COLOR_PAIR(1))) || U;
-        B = (mvinch(y + 1, x) == (ACS_VLINE | COLOR_PAIR(1))) || B;
-        L = (mvinch(y, x - 1) == (ACS_HLINE | COLOR_PAIR(1))) || L;
-        R = (mvinch(y, x + 1) == (ACS_HLINE | COLOR_PAIR(1))) || R;
-
-        int flags = 0;
-        chtype result;
-
-        flags += (int)U;
-        flags <<= 1;
-        flags += (int)B;
-        flags <<= 1;
-        flags += (int)L;
-        flags <<= 1;
-        flags += (int)R;
-
-        switch (flags)
-        {
-        case 0b1111:
-            result = ACS_PLUS;
-            break;
-        case 0b0111:
-            result = ACS_TTEE;
-            break;
-        case 0b1011:
-            result = ACS_BTEE;
-            break;
-        case 0b1101:
-            result = ACS_LTEE;
-            break;
-        case 0b1110:
-            result = ACS_RTEE;
-            break;
-        case 0b0101:
-            result = ACS_ULCORNER;
-            break;
-        case 0b0110:
-            result = ACS_URCORNER;
-            break;
-        case 0b1001:
-            result = ACS_LLCORNER;
-            break;
-        case 0b1010:
-            result = ACS_LRCORNER;
-            break;
-        default:
-            return 0;
-            break;
-        }
-
-        return result;
-    }
 };
 
 };
