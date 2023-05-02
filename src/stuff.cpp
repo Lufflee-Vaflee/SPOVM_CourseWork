@@ -57,7 +57,7 @@ chtype getcorner(int x, int y, bool U, bool B, bool L, bool R)
         break;
     }
 
-    return 0;
+    return result;
 }
 
 void smart_wborder(WINDOW* win)
@@ -84,7 +84,7 @@ WINDOW* create_newwin(int height, int width, int starty, int startx, chtype lu_c
 	local_win = subwin(stdscr, height, width, starty, startx);
     wattron(local_win, COLOR_PAIR(1));
     wbkgd(local_win, COLOR_PAIR(1));
-	wborder(local_win, 0, 0, 0, 0, lu_corner, ru_corner, ll_corner, rl_corner);
+	smart_wborder(local_win);
     wattroff(local_win, COLOR_PAIR(1));
 	wrefresh(local_win);
 
