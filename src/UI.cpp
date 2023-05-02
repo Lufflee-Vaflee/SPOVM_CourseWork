@@ -38,7 +38,7 @@ UI::UI()
     UI::status_bar = create_newwin(3, COLS, LINES - 3, 0);
 
     UI::left = new panelManager(stdscr, LINES - 3, COLS / 2 + 1, 1, 0);
-    UI::right = new panelManager(stdscr, LINES - 3, half_width, 1, half_width, ACS_TTEE, ACS_URCORNER, ACS_BTEE, ACS_RTEE);
+    UI::right = new panelManager(stdscr, LINES - 3, half_width, 1, half_width);
 }
 
 

@@ -18,7 +18,7 @@
 namespace YAExplorer
 {
 
-panelManager::panelManager(WINDOW* parent, int height, int width, int starty, int startx, chtype ul, chtype ur, chtype ll, chtype lr)
+panelManager::panelManager(WINDOW* parent, int height, int width, int starty, int startx)
 {
     if (height < 1 || width < 1 || starty < 0 || startx < 0)
         throw new std::exception();
@@ -36,14 +36,8 @@ panelManager::panelManager(WINDOW* parent, int height, int width, int starty, in
     wrefresh(tabbar);
 
 
-    //WINDOW* default_tab = newwin(3, TAB_SIZE_DEFAULT, tabbar->_begy, tabbar->_begx);
-    //wattron(default_tab, COLOR_PAIR(1));
-    //wborder(default_tab, 0, 0, 0, ' ', ul, ur, ACS_VLINE, lr);
-    //mvwprintw(default_tab, 1, 1, "%s", NEW_TAB);
-    //wattroff(default_tab, COLOR_PAIR(1));
-    //wrefresh(default_tab);
 
-    registrate_tab("");
+    registrate_tab("aSHDBAKSJDH");
     registrate_tab("avafsad");
 
     redraw_tabs();
