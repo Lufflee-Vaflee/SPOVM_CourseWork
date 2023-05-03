@@ -119,9 +119,13 @@ WINDOW* create_newwin(int height, int width, int starty, int startx, chtype lu_c
 	return local_win;
 }
 
-void destroy_win(WINDOW *local_win)
+void destroy_win(WINDOW *local_win) // !!WARNING!! this thing is not warried about neigbours borders and deleting them all, correct borders deleting is under user responsibility
 {
+    wclear(local_win);
+    wbkgd(local_win, COLOR_PAIR(1));
+    wattron(local_win, COLOR_PAIR(1));
 	wborder(local_win, ' ', ' ', ' ',' ',' ',' ',' ',' ');
+    wattroff(local_win, COLOR_PAIR(1));
 	wrefresh(local_win);
 	delwin(local_win);
 }
