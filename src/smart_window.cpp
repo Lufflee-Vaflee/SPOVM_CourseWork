@@ -3,21 +3,10 @@
 namespace YAExplorer
 {
 
-const std::shared_ptr<smartWindow> smartWindow::main = std::shared_ptr<smartWindow>(new smartWindow());
-
-const std::weak_ptr<smartWindow> smartWindow::main_ptr = main;
-
-smartWindow::smartWindow()      //special constructor for main window
-{
-    this->raw = stdscr;
-    this->neighbours = list<weak_ptr<smartWindow>>();
-    this->selfref = main;
-}
-
 smartWindow::smartWindow(int x, int y, int width, int height, weak_ptr<smartWindow> parent, const list<weak_ptr<smartWindow>>& neighbours)
 {
-    if(auto p = parent.lock())
-        this->raw = derwin(p->raw, height, width, y, x);
+    if(!parent.expired())
+        this->raw = derwin(parent.lock()->raw, height, width, y, x);
     this->neighbours = neighbours;
 }
 
@@ -216,6 +205,11 @@ void smartWindow::flush()
         wrefresh(this->raw);
 }
 
+void smartWindow::set_auto_refresh(bool flag)
+{
+    this->auto_refresh = flag;
+}
+
 string smartWindow::supress(string str, unsigned int to)
 {
     if(str.size() <= to)
@@ -259,9 +253,10 @@ weak_ptr<smartWindow> smartWindow::create_heir(int x, int y, int width, int heig
         throw exception();
     // add other checks;
 
-    shared_ptr<smartWindow> new_one = shared_ptr<smartWindow>(new smartWindow(x, y, width, height, this->selfref, neighbours));
-    new_one->selfref = new_one;
-    return new_one;
+
+    this->heirs.push_back(std::move(shared_ptr<smartWindow>(new smartWindow(x, y, width, height, this->selfref, neighbours))));
+    (*heirs.rbegin())->selfref = *heirs.rbegin(); 
+    return *heirs.rbegin();
 }
 
 smartWindow::~smartWindow()

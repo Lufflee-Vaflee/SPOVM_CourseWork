@@ -15,11 +15,8 @@ WINDOW* UI::status_bar = nullptr;
 panelManager* UI::left = nullptr;
 panelManager* UI::right = nullptr;
 
-UI::UI()
+UI::UI() : smartWindow::smartWindow()
 {
-    //if (has_colors() == false)
-    //    throw new std::exception();
-
     initscr();
     clear();
     refresh();
@@ -31,15 +28,18 @@ UI::UI()
 
     int half_width = COLS / 2;
 
-    UI::up_bar = subwin(stdscr, 1, COLS, 0, 0);
     wbkgd(UI::up_bar, COLOR_PAIR(1));
-    mvwprintw(UI::up_bar, 0, COLS - strlen(APP_NAME) - 1, "%s", APP_NAME);
     wrefresh(UI::up_bar);
 
-    UI::status_bar = create_newwin(3, COLS, LINES - 3, 0);
 
-    UI::left = new panelManager(stdscr, LINES - 3, COLS / 2 + 1, 1, 0);
-    UI::right = new panelManager(stdscr, LINES - 3, half_width, 1, half_width, ROOT_DIR);
+
+    //UI::up_bar = subwin(stdscr, 1, COLS, 0, 0);
+    //mvwprintw(UI::up_bar, 0, COLS - strlen(APP_NAME) - 1, "%s", APP_NAME);
+
+    //UI::status_bar = create_newwin(3, COLS, LINES - 3, 0);
+
+    //UI::left = new panelManager(stdscr, LINES - 3, COLS / 2 + 1, 1, 0);
+    //UI::right = new panelManager(stdscr, LINES - 3, half_width, 1, half_width, ROOT_DIR);
 }
 
 
@@ -74,11 +74,12 @@ UI::~UI()
 {
     echo();
     curs_set(curs_visible);
-    destroy_win(UI::up_bar);
-    destroy_win(UI::status_bar);
-    delete UI::left;
-    delete UI::right;
+    //destroy_win(UI::up_bar);
+    //destroy_win(UI::status_bar);
+    //delete UI::left;
+    //delete UI::right;
     endwin();
+
 }
 
 }

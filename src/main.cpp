@@ -1,4 +1,6 @@
 #include "UI.hpp"
+#include "smart_window.hpp"
+#include "filesystem"
 
 std::string& extract_dir(std::string& path);
 
@@ -17,7 +19,8 @@ int main(int argc, char* argv[])
 
     auto UI_ = YAExplorer::UI::GetInstance();
 
-    UI_->setStatus("test message");
+    //auto win = UI_->create_heir(10, 10, 30, 30);
+    //win.lock()->draw_borders();
 
     getch();
 

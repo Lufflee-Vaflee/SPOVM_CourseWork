@@ -1,9 +1,7 @@
 #pragma once
 
-#include "stuff.hpp"
 #include <ncurses.h>
 #include <list>
-#include <functional>
 #include <iostream>
 #include <memory>
 
@@ -12,6 +10,8 @@
 
 namespace YAExplorer
 {
+
+class UI;
 
 class smartWindow;
 
@@ -23,26 +23,24 @@ using namespace std;
 
 class smartWindow
 {
-    public:
+    protected:
 
-    static const weak_ptr<smartWindow> main_ptr;
+    smartWindow() = default;
 
-    private:
-
-    static const shared_ptr<smartWindow> main;
-
-    smartWindow();      //special constructor for main window
-
-    smartWindow(int x, int y, int width, int height, weak_ptr<smartWindow> parent = main, const list<weak_ptr<smartWindow>>& neighbours = list<weak_ptr<smartWindow>>());
+    smartWindow(int x, int y, int width, int height, weak_ptr<smartWindow> parent, const list<weak_ptr<smartWindow>>& neighbours = list<weak_ptr<smartWindow>>());
 
     smartWindow(smartWindow &other) = delete;
     void operator=(const smartWindow&) = delete;
 
+    public:
+
     smartWindow(smartWindow&& other);
+
+    private:
 
     bool auto_refresh = true;
 
-    list<weak_ptr<smartWindow>> neighbours;
+    list<weak_ptr<smartWindow>> neighbours = list<weak_ptr<smartWindow>>();
     list<shared_ptr<smartWindow>> heirs = list<shared_ptr<smartWindow>>();
 
     weak_ptr<smartWindow> selfref;
@@ -64,10 +62,10 @@ class smartWindow
     XY  getWH();
     XY  getmaxXY();
 
-    void draw_borders();
+    virtual void draw_borders();
     void draw_borders_no_bottom();
-    void delete_borders(bool smart = true);
-    void flush();
+    virtual void delete_borders(bool smart = true);
+    virtual void flush();
 
     void refresh();
     void print(const std::string& mes); // add more complex parameters
@@ -79,7 +77,9 @@ class smartWindow
 
     weak_ptr<smartWindow> create_heir(int x, int y, int width, int height, const list<weak_ptr<smartWindow>>& neighbours = list<weak_ptr<smartWindow>>());
 
-    ~smartWindow();
+    virtual ~smartWindow();
+
+    friend class UI;
 };
 
 
