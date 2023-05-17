@@ -5,13 +5,15 @@
 #include <iostream>
 #include <memory>
 
+#include "UI.hpp"
+
 #define MIN_WINDOW_HEIGHT 3
 #define MIN_WINDOW_WIDTH 3
 
 namespace YAExplorer
 {
 
-class UI;
+class mainWin;
 
 class smartWindow;
 
@@ -23,16 +25,20 @@ using namespace std;
 
 class smartWindow
 {
+    private:
+
+    smartWindow();  //special constructor for main window
+
     protected:
 
-    smartWindow() = default;
-
-    smartWindow(int x, int y, int width, int height, weak_ptr<smartWindow> parent, const list<weak_ptr<smartWindow>>& neighbours = list<weak_ptr<smartWindow>>());
+    smartWindow(int x, int y, int width, int height, const smartWindow& parent = main, const list<weak_ptr<smartWindow>>& neighbours = list<weak_ptr<smartWindow>>());
 
     smartWindow(smartWindow &other) = delete;
     void operator=(const smartWindow&) = delete;
 
     public:
+
+    static smartWindow main;
 
     smartWindow(smartWindow&& other);
 
@@ -40,10 +46,9 @@ class smartWindow
 
     bool auto_refresh = true;
 
-    list<weak_ptr<smartWindow>> neighbours = list<weak_ptr<smartWindow>>();
-    list<shared_ptr<smartWindow>> heirs = list<shared_ptr<smartWindow>>();
+    list<weak_ptr<smartWindow>> neighbours;
 
-    weak_ptr<smartWindow> selfref;
+    list<shared_ptr<smartWindow>> heirs = list<shared_ptr<smartWindow>>();
 
     WINDOW* raw; //raw window pointer to interract with ncurses lib
 
@@ -64,8 +69,8 @@ class smartWindow
 
     virtual void draw_borders();
     void draw_borders_no_bottom();
-    virtual void delete_borders(bool smart = true);
-    virtual void flush();
+    void delete_borders(bool smart = true);
+    void flush();
 
     void refresh();
     void print(const std::string& mes); // add more complex parameters
@@ -75,13 +80,70 @@ class smartWindow
     void registrate_neighbour(weak_ptr<smartWindow> neighbour);
     bool delete_neighbour(weak_ptr<smartWindow> neighbour);
 
-    weak_ptr<smartWindow> create_heir(int x, int y, int width, int height, const list<weak_ptr<smartWindow>>& neighbours = list<weak_ptr<smartWindow>>());
-
     virtual ~smartWindow();
+    class Creator              //fabrick
+    {
+        public:
 
-    friend class UI;
+        Creator(int x, int y, int width, int height, const list<weak_ptr<smartWindow>>& neighbours = list<weak_ptr<smartWindow>>());
+
+        protected:
+
+        int x, y, width, height;
+        list<weak_ptr<smartWindow>> neighbours;
+
+        void registrate_heir(smartWindow& parent, shared_ptr<smartWindow>& heir);
+
+        public:
+
+        virtual weak_ptr<smartWindow> create(smartWindow& parent);
+
+        ~Creator() = default;
+    };
+
+    weak_ptr<smartWindow> create(smartWindow::Creator builder);
 };
 
+
+
+
+// this is just an example of normal way to inherite smartWindow class
+/*
+class anotherWin : public smartWindow
+{
+    protected:
+    anotherWin(int another_value, int x, int y, int width, int height, const smartWindow& parent = smartWindow::main, const list<weak_ptr<smartWindow>>& neighbours = list<weak_ptr<smartWindow>>())
+        : smartWindow(x, y, width, height, parent, neighbours)
+    {
+
+    }
+
+    public:
+    class Creator : public smartWindow::Creator              //fabrick
+    {
+        int another_value;
+
+        public:
+
+        Creator(int another_value, int x, int y, int width, int height, const list<weak_ptr<smartWindow>>& neighbours = list<weak_ptr<smartWindow>>())
+            : smartWindow::Creator(x, y, width, height, neighbours)
+        {
+        }
+
+        virtual weak_ptr<smartWindow> create(smartWindow& parent) override
+        {
+            shared_ptr<smartWindow> win = std::dynamic_pointer_cast<smartWindow>(std::shared_ptr<anotherWin>(new anotherWin(0, x, y, width, height, parent, neighbours)));
+            this->registrate_heir(parent, win);
+            return win;
+        }
+
+        ~Creator()
+        {
+
+        }
+    };
+};
+*/
 
 
 }

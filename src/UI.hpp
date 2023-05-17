@@ -21,39 +21,24 @@ class smartWindow;
 
 #define APP_NAME "Yet Another Explorer"
 
-class UI : public smartWindow               //singleton
+class UI               //singleton
 {
     private:
 
     UI();
-
-    static UI* instance;
-
-    static WINDOW* up_bar;
-    static WINDOW* status_bar;
-
-    static panelManager* left;
-    static panelManager* right;
-
-    static std::string status;
 
     public:
 
     UI(UI &other) = delete;
     void operator=(const UI&) = delete;
 
-    static UI* GetInstance();
-    static void CloseInstance();
+    static UI& instance()
+    {
+        static UI inst;
+        return inst;
+    }
 
-    static void setStatus(std::string message);
-    static std::string getStatus();
-
-    //static bool changeSide(); // 0 - left, 1 - right;
-
-
-    private:
-
-    virtual ~UI();
+    ~UI();
 };
 
 
