@@ -13,12 +13,6 @@
 namespace YAExplorer
 {
 
-class mainWin;
-
-class smartWindow;
-
-typedef smartWindow SWindow;
-
 typedef std::pair<int, int> XY;
 
 using namespace std;
