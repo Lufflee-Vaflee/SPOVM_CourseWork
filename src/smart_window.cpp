@@ -3,21 +3,17 @@
 namespace YAExplorer
 {
 
-const std::shared_ptr<smartWindow> smartWindow::main = std::shared_ptr<smartWindow>(new smartWindow());
+smartWindow smartWindow::main = smartWindow();
 
-const std::weak_ptr<smartWindow> smartWindow::main_ptr = main;
-
-smartWindow::smartWindow()      //special constructor for main window
+smartWindow::smartWindow()
 {
+    UI::instance();  //guarantee UI initialization
     this->raw = stdscr;
-    this->neighbours = list<weak_ptr<smartWindow>>();
-    this->selfref = main;
 }
 
-smartWindow::smartWindow(int x, int y, int width, int height, weak_ptr<smartWindow> parent, const list<weak_ptr<smartWindow>>& neighbours)
+smartWindow::smartWindow(int x, int y, int width, int height, const smartWindow& parent, const list<weak_ptr<smartWindow>>& neighbours)
 {
-    if(auto p = parent.lock())
-        this->raw = derwin(p->raw, height, width, y, x);
+    this->raw = derwin(parent.raw, height, width, y, x);
     this->neighbours = neighbours;
 }
 
@@ -216,6 +212,11 @@ void smartWindow::flush()
         wrefresh(this->raw);
 }
 
+void smartWindow::set_auto_refresh(bool flag)
+{
+    this->auto_refresh = flag;
+}
+
 string smartWindow::supress(string str, unsigned int to)
 {
     if(str.size() <= to)
@@ -245,7 +246,7 @@ void smartWindow::print(const std::string& mes)
 
 void smartWindow::refresh()
 {
-    wrefresh(this->raw);
+    wrefresh(this->raw); //case all heirs have common memory space there is no need in recursive refresh call (i guess);
 }
 
 void smartWindow::registrate_neighbour(weak_ptr<smartWindow> neighbour)
@@ -253,23 +254,39 @@ void smartWindow::registrate_neighbour(weak_ptr<smartWindow> neighbour)
     this->neighbours.emplace_back(neighbour);
 }
 
-weak_ptr<smartWindow> smartWindow::create_heir(int x, int y, int width, int height, const list<weak_ptr<smartWindow>>& neighbours)
+weak_ptr<smartWindow> smartWindow::create(smartWindow::Creator builder)
 {
-    if (width < MIN_WINDOW_WIDTH || height < MIN_WINDOW_HEIGHT)
-        throw exception();
-    // add other checks;
-
-    shared_ptr<smartWindow> new_one = shared_ptr<smartWindow>(new smartWindow(x, y, width, height, this->selfref, neighbours));
-    new_one->selfref = new_one;
-    return new_one;
+    return builder.create(*this);
 }
 
 smartWindow::~smartWindow()
 {
-    this->heirs.clear();
+    while(heirs.size())
+        heirs.pop_back();
     wclear(this->raw);
     this->delete_borders(true);
     delwin(this->raw);
+}
+
+smartWindow::Creator::Creator(int x, int y, int width, int height, const list<weak_ptr<smartWindow>>& neighbours)
+{
+    this->x = x;
+    this->y = y;
+    this->width = width;
+    this->height = height;
+    this->neighbours = neighbours;
+}
+
+weak_ptr<smartWindow> smartWindow::Creator::create(smartWindow& parent)
+{
+    auto win = shared_ptr<smartWindow>(new smartWindow(x, y, width, height, parent));
+    this->registrate_heir(parent, win);
+    return win;
+}
+
+void smartWindow::Creator::registrate_heir(smartWindow& parent, shared_ptr<smartWindow>& heir)
+{
+    parent.heirs.push_back(std::move(heir));
 }
 
 
