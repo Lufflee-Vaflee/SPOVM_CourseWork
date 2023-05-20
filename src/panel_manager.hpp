@@ -10,6 +10,7 @@
 #include <tuple>
 
 #include "stuff.hpp"
+#include "smart_window.hpp"
 
 #define TAB_SIZE_MAX 30
 #define NEW_TAB  "NEW TAB"
@@ -17,8 +18,10 @@
 namespace YAExplorer
 {
 
+class smartWindow;
+
 //i guess i need better name for this class
-//these thing should manage all tabs of left or ride panels of app
+//this thing should manage all tabs of left or ride panels of app
 //it needs to:
 //adding new tabs
 //removing tabs
@@ -32,43 +35,54 @@ namespace YAExplorer
 
 extern std::filesystem::path LAUNCH_DIR;
 
-typedef std::pair<std::string, WINDOW*> tab;
-
-class panelManager
+class panelManager : smartWindow
 {
-    public:
+    protected:
 
-    panelManager(WINDOW* parent, int height, int width, int starty, int startx, std::filesystem::path start_dir = LAUNCH_DIR);
+    panelManager(int x, int y, int width, int height, const smartWindow& parent = main, std::filesystem::path _default = LAUNCH_DIR, const list<weak_ptr<smartWindow>>& neighbours = list<weak_ptr<smartWindow>>());
 
     panelManager(panelManager &other) = delete;
     void operator=(const panelManager&) = delete;
 
-
     private:
 
-    WINDOW* current;
-    WINDOW* tabbar;
+    std::list<std::string> tabs;
+    std::list<weak_ptr<smartWindow>> view;
+    std::list<std::string>::iterator cur_tab;
 
-    std::list<tab> tabs;
-
-    std::list<tab>::iterator cur_tab;
-
-    int height;
-    int width;
+    weak_ptr<smartWindow> body = this->create(smartWindow::Creator(0, 3, this->get_width(), this->get_height() - 3)); // this will defenitly have his own class inherited from smartWindow, so this is temporary thing
 
     int tabs_size = TAB_SIZE_MAX;
 
-
     void registrate_tab(std::string name);                      //that thing only REGISTER, NOT DRAWING new tab, only for internal class use
-    void remove_tab(std::list<tab>::iterator removed);  //most likely deleting tab will be current chosen, os iterator will be good idea
-    void set_current(std::list<tab>::iterator);
-    void redraw_tabs();                                         //as evety possible change will defenitly cause all tabs structure is easiear to reedraw all tabs, only for internal use
+    void remove_tab(std::list<std::string>::iterator removed);          //most likely deleting tab will be current chosen, os iterator will be good idea
+    void set_current(std::list<std::string>::iterator current);
+    void redraw_tabs();                                         //as every possible change will defenitly cause all tabs structure is easiear to redraw all tabs, only for internal use
     void flush_tabs();
-
+    void switch_positions(std::list<std::string>::iterator from, std::list<std::string>::iterator to);
 
     public:
 
-    ~panelManager();
+    //here should be interaction interface
+
+    virtual ~panelManager() = default;
+
+    class Creator : public smartWindow::Creator              //fabrick
+    {
+        public:
+
+        Creator(int x, int y, int width, int height, const smartWindow& parent = main, std::filesystem::path _default = LAUNCH_DIR, const list<weak_ptr<smartWindow>>& neighbours = list<weak_ptr<smartWindow>>());
+
+        protected:
+
+        std::filesystem::path _default;
+
+        public:
+
+        virtual weak_ptr<smartWindow> create(smartWindow& parent) override;
+
+        ~Creator() = default;
+    };
 };
 
 };
