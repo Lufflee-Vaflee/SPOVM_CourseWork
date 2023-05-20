@@ -96,7 +96,7 @@ class smartWindow
         ~Creator() = default;
     };
 
-    weak_ptr<smartWindow> create(smartWindow::Creator builder);
+    weak_ptr<smartWindow> create(smartWindow::Creator& builder);
     bool delete_(std::weak_ptr<smartWindow> win);
     std::optional<weak_ptr<smartWindow>> get(int num);
 

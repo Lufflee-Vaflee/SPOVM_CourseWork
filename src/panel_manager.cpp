@@ -19,39 +19,14 @@ namespace YAExplorer
 panelManager::panelManager(int x, int y, int width, int height, const smartWindow& parent, std::filesystem::path _default, const list<weak_ptr<smartWindow>>& neighbours)
     : smartWindow(x, y, width, height, parent, neighbours)
 {
+    auto builder = smartWindow::Creator(0, 2, this->get_width(), this->get_height() - 2);
+    this->body = this->create(builder); 
     this->draw_borders();
     this->refresh();
     this->tabs.push_back(NEW_TAB);
     this->registrate_tab(_default.c_str());
     this->cur_tab = tabs.begin();
     this->redraw_tabs();
-
-
-
-    /*
-    if (height < 1 || width < 1 || starty < 0 || startx < 0)
-        throw new std::exception();
-
-    this->height = height;
-    this->width = width;
-    current = derwin(parent, height, width, starty, startx);
-    wbkgd(current, COLOR_PAIR(1));
-    smart_wborder(current);
-    wrefresh(current);
-
-    tabbar = derwin(current, 3, width, 0, 0);
-    smart_wborder(tabbar);
-    
-    wrefresh(tabbar);
-
-    this->tabs.push_back(tab(NEW_TAB, nullptr));
-    this->cur_tab = tabs.begin();
-
-    registrate_tab(dir.c_str());
-    set_current(tabs.begin());
-
-    redraw_tabs();
-    */
 }
 
 void panelManager::registrate_tab(std::string name) 
@@ -97,10 +72,10 @@ void panelManager::flush_tabs()
 
     this->view.clear();
 
-    this->body.lock()->draw_borders();
-    this->body.lock()->refresh();
     this->draw_borders();
     this->refresh();
+    this->body.lock()->draw_borders();
+    this->body.lock()->refresh();
 }
 
 void panelManager::redraw_tabs()
@@ -121,22 +96,36 @@ void panelManager::redraw_tabs()
             correction--;
         }
 
-        view.push_back(this->create(smartWindow::Creator(countx, 0, real_tab_size + 1, 3)));
+        auto builder = smartWindow::Creator(countx, 0, real_tab_size + 1, 3);
+
+        weak_ptr<smartWindow> t = this->create(builder);
+
+        view.push_back(t);
 
         if (i == this->cur_tab)
-            (*view.rend()).lock()->draw_borders_no_bottom();
+            (*view.rbegin()).lock()->draw_borders_no_bottom();
         else
-            (*view.rend()).lock()->draw_borders();
+            (*view.rbegin()).lock()->draw_borders();
 
-        (*view.rend()).lock()->print(*i);
+        (*view.rbegin()).lock()->print(*i);
 
         countx += real_tab_size;
     }
 
-
     //wrefresh(tabbar);
 }
 
+panelManager::Creator::Creator(int x, int y, int width, int height, std::filesystem::path _default, const list<weak_ptr<smartWindow>>& neighbours)
+    : smartWindow::Creator(x, y, width, height, neighbours)
+{
+    this->_default = _default;
+}
 
+weak_ptr<smartWindow> panelManager::Creator::create(smartWindow& parent)
+{
+    shared_ptr<smartWindow> win = std::dynamic_pointer_cast<smartWindow>(std::shared_ptr<panelManager>(new panelManager(x, y, width, height, parent, _default,neighbours)));
+    this->registrate_heir(parent, win);
+    return win;
+}
 
 }
