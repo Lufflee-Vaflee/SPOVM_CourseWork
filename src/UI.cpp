@@ -1,7 +1,10 @@
 #include "UI.hpp"
+#include "panel_manager.hpp"
 
 namespace YAExplorer
 {
+
+
 
 UI::UI()
 {

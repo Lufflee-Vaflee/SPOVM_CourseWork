@@ -9,7 +9,6 @@
 #include <cstring>
 #include <tuple>
 
-#include "stuff.hpp"
 #include "smart_window.hpp"
 
 #define TAB_SIZE_MAX 30
@@ -35,7 +34,7 @@ class smartWindow;
 
 extern std::filesystem::path LAUNCH_DIR;
 
-class panelManager : smartWindow
+class panelManager : public smartWindow
 {
     protected:
 
@@ -50,7 +49,7 @@ class panelManager : smartWindow
     std::list<weak_ptr<smartWindow>> view;
     std::list<std::string>::iterator cur_tab;
 
-    weak_ptr<smartWindow> body = this->create(smartWindow::Creator(0, 3, this->get_width(), this->get_height() - 3)); // this will defenitly have his own class inherited from smartWindow, so this is temporary thing
+    weak_ptr<smartWindow> body; // this will defenitly have his own class inherited from smartWindow, so this is temporary thing
 
     int tabs_size = TAB_SIZE_MAX;
 
@@ -71,7 +70,7 @@ class panelManager : smartWindow
     {
         public:
 
-        Creator(int x, int y, int width, int height, const smartWindow& parent = main, std::filesystem::path _default = LAUNCH_DIR, const list<weak_ptr<smartWindow>>& neighbours = list<weak_ptr<smartWindow>>());
+        Creator(int x, int y, int width, int height, std::filesystem::path _default = LAUNCH_DIR, const list<weak_ptr<smartWindow>>& neighbours = list<weak_ptr<smartWindow>>());
 
         protected:
 

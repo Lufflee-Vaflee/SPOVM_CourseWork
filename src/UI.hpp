@@ -7,7 +7,7 @@
 #include <string>
 
 #include "smart_window.hpp"
-#include "stuff.hpp"
+//#include "panel_manager.hpp"
 
 namespace YAExplorer
 {
