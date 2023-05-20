@@ -6,7 +6,6 @@
 #include <cstring>
 #include <string>
 
-#include "panel_manager.hpp"
 #include "smart_window.hpp"
 #include "stuff.hpp"
 
