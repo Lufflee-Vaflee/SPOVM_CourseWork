@@ -242,6 +242,9 @@ void smartWindow::print(const std::string& mes)
     wattron(this->raw, COLOR_PAIR(1));
     mvwprintw(this->raw, 1, 1, "%s", this->supress(mes, this->get_width() - 2));
     wattroff(this->raw, COLOR_PAIR(1));
+
+    if(auto_refresh)
+        this->refresh();
 }
 
 void smartWindow::refresh()
@@ -263,8 +266,10 @@ smartWindow::~smartWindow()
 {
     while(heirs.size())
         heirs.pop_back();
-    wclear(this->raw);
+    this->flush();
     this->delete_borders(true);
+    if(this->auto_refresh)
+        this->refresh();
     delwin(this->raw);
 }
 
@@ -289,5 +294,31 @@ void smartWindow::Creator::registrate_heir(smartWindow& parent, shared_ptr<smart
     parent.heirs.push_back(std::move(heir));
 }
 
+bool smartWindow::delete_(std::weak_ptr<smartWindow> win)
+{
+    for(auto i = heirs.begin(); i != heirs.end(); i++)
+    {
+        if(win.lock() == *i)
+        {
+            heirs.erase(i);
+            return true;
+        }
+    }
+
+    return false;
+}
+
+std::optional<weak_ptr<smartWindow>> smartWindow::get(int num)
+{
+    auto temp = heirs.begin();
+    for(int i = 0; i < num; i++)
+    {
+        if(temp == heirs.end())
+            return std::nullopt;
+        temp++;
+    }
+
+    return std::optional<weak_ptr<smartWindow>>(*temp);
+}
 
 }
