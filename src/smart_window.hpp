@@ -4,6 +4,7 @@
 #include <list>
 #include <iostream>
 #include <memory>
+#include <optional>
 
 #include "UI.hpp"
 
@@ -96,6 +97,9 @@ class smartWindow
     };
 
     weak_ptr<smartWindow> create(smartWindow::Creator builder);
+    bool delete_(std::weak_ptr<smartWindow> win);
+    std::optional<weak_ptr<smartWindow>> get(int num);
+
 };
 
 
