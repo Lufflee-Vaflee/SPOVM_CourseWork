@@ -12,13 +12,14 @@ set(SOURCES
     "${PROJECT_SOURCE_DIR}/UI.cpp"
     "${PROJECT_SOURCE_DIR}/panel_manager.cpp"
     "${PROJECT_SOURCE_DIR}/smart_window.cpp"
+    "${PROJECT_SOURCE_DIR}/dir_window.cpp"
     )
 
 set(HEADERS
     "${PROJECT_SOURCE_DIR}/UI.hpp"
     "${PROJECT_SOURCE_DIR}/panel_manager.hpp"
     "${PROJECT_SOURCE_DIR}/smart_window.hpp"
-#    "${PROJECT_SOURCE_DIR}/dir_panel.hpp"
+    "${PROJECT_SOURCE_DIR}/dir_window.hpp"
     )
 
 #configure_file(
