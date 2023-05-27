@@ -4,11 +4,6 @@
 #include <algorithm>
 #include <time.h>
 
-#define TYPE_SPACE 5
-#define CHANGE_SPACE 9
-#define SIZE_SPACE 8
-#define MIN_WIDTH TYPE_SPACE + CHANGE_SPACE + SIZE_SPACE + 8
-
 namespace YAExplorer
 {
 
@@ -20,7 +15,7 @@ dirWindow::dirWindow(int x, int y, int width, int height, const smartWindow& par
 
     this->catalog = catalog;
     draw_head();
-
+    this->redraw(0, true);
 }
 
 void dirWindow::draw_head()
@@ -145,21 +140,6 @@ int dirWindow::count_screens(bool update)
     return this->entries.size() / this->get_space() + 1;
 }
 
-struct HumanReadable 
-{
-    std::uintmax_t size{};
-    private: friend
-    std::ostream& operator<<(std::ostream& os, HumanReadable hr) 
-    {
-        int i{};
-        double mantissa = hr.size;
-        for (; mantissa >= 1024.; mantissa /= 1024., ++i) { }
-        mantissa = std::ceil(mantissa * 10.) / 10.;
-        os << mantissa << "BKMGTPE"[i];
-        return i == 0 ? os : os << "B (" << hr.size << ')';
-    }
-};
-
 std::string readable_size(std::filesystem::directory_entry entry)
 {
     std::uintmax_t size = entry.file_size();
@@ -179,27 +159,87 @@ std::string readable_size(std::filesystem::directory_entry entry)
     return result.str();
 }
 
+template <typename TP>
+std::time_t to_time_t(TP tp)
+{
+    using namespace std::chrono;
+    auto sctp = time_point_cast<system_clock::duration>(tp - TP::clock::now() + system_clock::now());
+    return system_clock::to_time_t(sctp);
+}
+
 std::string readable_time(std::filesystem::directory_entry entry)
 {
-    
-}
+    time_t t = to_time_t(entry.last_write_time());
+    tm time = *localtime(&t);
 
-void dirWindow::draw_entry(std::filesystem::directory_entry entry, int position)
+    int year = time.tm_year + 1900;
+    int month = time.tm_mon + 1;
+    int day = time.tm_mday;
+
+    int hour = time.tm_hour;
+    int minute = time.tm_min;
+
+    std::stringstream readable;
+    std::stringstream temp;
+
+    // 2 + 1 + 2 + 1 + 4 + 1 + 2 + 1 + 2  + 1 = 17 symb
+    readable << std::setfill('0');
+    readable << std::setw(2) <<  day << ":";
+    readable << std::setw(2) << month << ":" << year << " ";
+    readable << std::setw(2) << hour << ":";
+    readable << std::setw(2) << minute;
+    return readable.str();
+} 
+
+std::string readable_type(std::filesystem::directory_entry entry)
 {
-    smartWindow::Creator builder(0, 0, this->get_width(), 2);
-    auto head = this->create(builder);
-                                        // type - file dir link unknown  5 chracters space
-                                        // size - 1 - 1023 [k/g/t]B - 8 characters
-                                        // change - xx:xx:xx - 9 charachters
-                                        // name - width - (5 + 8 + 9) = width - 22
-
-    head.lock()->print(readable_size(entry), 1, this->get_width() - TYPE_SPACE - 1);
-    head.lock()->print("change", 1, this->get_width() - CHANGE_SPACE - TYPE_SPACE - 1);
-    head.lock()->print("type", 1, this->get_width() - CHANGE_SPACE - TYPE_SPACE - SIZE_SPACE - 1);
-    head.lock()->print("name", 1, 1);
-
-    head.lock()->refresh();
+    if (entry.is_directory())
+    {
+        return "dir";
+    }
+    else if (entry.is_regular_file())
+    {
+        return "file";
+    }
+    else if (entry.is_symlink())
+    {
+        return "link";
+    }
+    else
+    {
+        return "other";
+    }
 }
+
+bool dirWindow::redraw(int screen_num, bool update)
+{
+    if(update)
+        this->sort(this->order);
+
+    if(screen_num < 0 || screen_num > this->count_screens())
+        return false;
+
+    auto temp = this->entries.begin();
+    int count = 0;
+    for(; temp != this->entries.end() && count <= (this->get_space() * screen_num); temp++)
+        count++;
+
+    this->view.clear();
+
+    for(int i = 0; i < get_space() && temp != this->entries.end(); i++)
+    {
+        auto t = entryWindow::Creator(1, i + 2, this->get_width() - 1, 1, *temp);
+        weak_ptr<entryWindow> win = std::dynamic_pointer_cast<entryWindow>(this->create(t).lock());
+        this->view.push_back(win);
+        if(!win.lock()->redraw())
+            i--;
+    }
+
+    this->refresh();
+
+    return true;
+}
+
 
 
 

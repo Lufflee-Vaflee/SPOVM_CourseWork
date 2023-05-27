@@ -7,6 +7,7 @@
 #include <chrono>
 
 #include "smart_window.hpp"
+#include "entry_window.hpp"
 
 
 namespace YAExplorer
@@ -32,6 +33,8 @@ class dirWindow : public smartWindow
     std::filesystem::path catalog;
     sortOrder order = sortOrder::none;
     std::vector<std::filesystem::directory_entry> entries;
+
+    std::vector<std::weak_ptr<entryWindow>> view;
     int current_screen = 0;
 
     public:
@@ -41,11 +44,12 @@ class dirWindow : public smartWindow
     void update_model();
 
     int get_space();
-    int count_screens(bool update = false);
+    int count_screens(bool update_model = false);
 
     void draw_head();
-    void draw_entry(std::filesystem::directory_entry str, int position);
-    bool redraw(int screen_num = 0);
+    bool redraw(int screen_num = 0, bool update = false);
+
+    virtual ~dirWindow() = default;
 
     class Creator : public smartWindow::Creator
     {
@@ -61,10 +65,9 @@ class dirWindow : public smartWindow
 
         virtual weak_ptr<smartWindow> create(smartWindow& parent) override;
 
-        ~Creator() = default;
+        virtual ~Creator() = default;
     };
 
-    virtual ~dirWindow() = default;
 };
 
 };

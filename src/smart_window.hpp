@@ -94,7 +94,7 @@ class smartWindow
 
         virtual weak_ptr<smartWindow> create(smartWindow& parent);
 
-        ~Creator() = default;
+        virtual ~Creator() = default;
     };
 
     weak_ptr<smartWindow> create(smartWindow::Creator& builder);
