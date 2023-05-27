@@ -36,6 +36,9 @@ class dirWindow : public smartWindow
 
     std::vector<std::weak_ptr<entryWindow>> view;
     int current_screen = 0;
+    int selected_entry = 0;
+
+    void flush_view();
 
     public:
 

@@ -34,6 +34,7 @@ class entryWindow : public smartWindow
     public:
 
     bool redraw();
+    std::filesystem::directory_entry get_entry();
 
     //void mark_as_chosen(); // navigation feachurel
 

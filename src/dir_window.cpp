@@ -3,7 +3,7 @@
 #include <sstream>
 #include <algorithm>
 #include <time.h>
-
+#include <unistd.h>
 namespace YAExplorer
 {
 
@@ -15,20 +15,18 @@ dirWindow::dirWindow(int x, int y, int width, int height, const smartWindow& par
 
     this->catalog = catalog;
     draw_head();
-    this->redraw(0, true);
+    //this->redraw(0, true);
+
+    this->redraw(1, true);
 }
 
 void dirWindow::draw_head()
 {
     smartWindow::Creator builder(0, 0, this->get_width(), 2);
     auto head = this->create(builder);
-                                        // type - file dir link unknown  5 chracters space
-                                        // size - 1 - 1023 [k/g/t]B - 8 characters
-                                        // change - xx:xx:xx - 9 charachters
-                                        // name - width - (5 + 8 + 9) = width - 22
-    head.lock()->print("size", 1, this->get_width() - TYPE_SPACE - 1);
-    head.lock()->print("change", 1, this->get_width() - CHANGE_SPACE - TYPE_SPACE - 1);
-    head.lock()->print("type", 1, this->get_width() - CHANGE_SPACE - TYPE_SPACE - SIZE_SPACE - 1);
+    head.lock()->print("size", 1, this->get_width() - SIZE_SPACE - 1);
+    head.lock()->print("last change", 1, this->get_width() - CHANGE_SPACE - SIZE_SPACE - 1);
+    head.lock()->print("type", 1, this->get_width() - CHANGE_SPACE - SIZE_SPACE - TYPE_SPACE - 1);
     head.lock()->print("name", 1, 1);
 
     head.lock()->refresh();
@@ -69,6 +67,7 @@ int countType(const std::filesystem::directory_entry& a)
 
 void dirWindow::update_model()
 {
+    entries.clear();
     for (const auto& entry : std::filesystem::directory_iterator(this->catalog))
         entries.push_back(entry);
 }
@@ -211,6 +210,16 @@ std::string readable_type(std::filesystem::directory_entry entry)
     }
 }
 
+void dirWindow::flush_view()
+{
+    for(auto i = view.begin(); i != view.end(); i++)
+    {
+        i->lock()->set_auto_refresh(true);
+        this->delete_(*i);
+    }
+    view.clear();
+}
+
 bool dirWindow::redraw(int screen_num, bool update)
 {
     if(update)
@@ -224,7 +233,7 @@ bool dirWindow::redraw(int screen_num, bool update)
     for(; temp != this->entries.end() && count <= (this->get_space() * screen_num); temp++)
         count++;
 
-    this->view.clear();
+    this->flush_view();
 
     for(int i = 0; i < get_space() && temp != this->entries.end(); i++)
     {
@@ -233,6 +242,7 @@ bool dirWindow::redraw(int screen_num, bool update)
         this->view.push_back(win);
         if(!win.lock()->redraw())
             i--;
+        temp++;
     }
 
     this->refresh();

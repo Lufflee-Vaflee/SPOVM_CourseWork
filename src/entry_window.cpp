@@ -99,15 +99,19 @@ bool entryWindow::redraw()
     // change - xx:xx:xx - 9 charachters
     // name - width - (5 + 8 + 9) = width - 22
 
-    auto str = this->readable_size();
-
-    this->print(readable_size(), 0, this->get_width() - SIZE_SPACE - 1);
+    if(this->entry.is_regular_file())
+        this->print(readable_size(), 0, this->get_width() - SIZE_SPACE - 1);
     this->print(readable_time(), 0, this->get_width() - CHANGE_SPACE - SIZE_SPACE - 1);
     this->print(readable_type(), 0, this->get_width() - CHANGE_SPACE - SIZE_SPACE - TYPE_SPACE - 1);
     this->print(this->entry.path().filename(), 0, 0, this->get_width() - MIN_WIDTH);
     this->refresh();
 
     return true;
+}
+
+std::filesystem::directory_entry entryWindow::get_entry()
+{
+    return this->entry;
 }
 
 weak_ptr<smartWindow> entryWindow::Creator::create(smartWindow& parent)
