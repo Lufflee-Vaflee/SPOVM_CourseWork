@@ -10,6 +10,7 @@
 #include <tuple>
 
 #include "smart_window.hpp"
+#include "dir_window.hpp"
 
 #define TAB_SIZE_MAX 30
 #define NEW_TAB  "NEW TAB"
@@ -49,7 +50,7 @@ class panelManager : public smartWindow
     std::list<weak_ptr<smartWindow>> view;
     std::list<std::string>::iterator cur_tab;
 
-    weak_ptr<smartWindow> body; // this will defenitly have his own class inherited from smartWindow, so this is temporary thing
+    weak_ptr<dirWindow> body; 
 
     int tabs_size = TAB_SIZE_MAX;
 

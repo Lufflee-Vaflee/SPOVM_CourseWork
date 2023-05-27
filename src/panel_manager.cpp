@@ -19,14 +19,16 @@ namespace YAExplorer
 panelManager::panelManager(int x, int y, int width, int height, const smartWindow& parent, std::filesystem::path _default, const list<weak_ptr<smartWindow>>& neighbours)
     : smartWindow(x, y, width, height, parent, neighbours)
 {
-    auto builder = smartWindow::Creator(0, 2, this->get_width(), this->get_height() - 2);
-    this->body = this->create(builder); 
+    auto builder = dirWindow::Creator(0, 2, this->get_width(), this->get_height() - 2, _default);
+    this->body = std::dynamic_pointer_cast<dirWindow>(this->create(builder).lock()); 
     this->draw_borders();
     this->refresh();
     this->tabs.push_back(NEW_TAB);
     this->registrate_tab(_default.c_str());
     this->cur_tab = tabs.begin();
     this->redraw_tabs();
+
+
 }
 
 void panelManager::registrate_tab(std::string name) 

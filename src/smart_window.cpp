@@ -240,10 +240,16 @@ namespace YAExplorer
         return result;
     }
 
-    void smartWindow::print(const std::string &mes)
+    void smartWindow::print(const std::string& mes, int x, int y, int max)
     {
+        if(max = INT_MAX)
+            max = this->get_width() - 2;
+
+        if (max > this->get_width())
+            max = this->get_width();
+
         wattron(this->raw, COLOR_PAIR(1));
-        mvwprintw(this->raw, 1, 1, "%s", this->supress(mes, this->get_width() - 2).c_str());
+        mvwprintw(this->raw, x, y, "%s", this->supress(mes, max).c_str());
         wattroff(this->raw, COLOR_PAIR(1));
 
         if (auto_refresh)

@@ -10,6 +10,7 @@
 
 #define MIN_WINDOW_HEIGHT 3
 #define MIN_WINDOW_WIDTH 3
+#define INT_MAX 0x7FFFFFFE
 
 namespace YAExplorer
 {
@@ -68,7 +69,7 @@ class smartWindow
     void flush();
 
     void refresh();
-    void print(const std::string& mes); // add more complex parameters
+    void print(const std::string& mes, int x = 1, int y = 1, int max = INT_MAX); // add more complex parameters
 
     void set_auto_refresh(bool refresh);
 
@@ -93,7 +94,7 @@ class smartWindow
 
         virtual weak_ptr<smartWindow> create(smartWindow& parent);
 
-        ~Creator() = default;
+        virtual ~Creator() = default;
     };
 
     weak_ptr<smartWindow> create(smartWindow::Creator& builder);
