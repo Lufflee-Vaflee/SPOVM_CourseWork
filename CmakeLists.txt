@@ -14,6 +14,7 @@ set(SOURCES
     "${PROJECT_SOURCE_DIR}/panel_manager.cpp"
     "${PROJECT_SOURCE_DIR}/smart_window.cpp"
     "${PROJECT_SOURCE_DIR}/dir_window.cpp"
+    "${PROJECT_SOURCE_DIR}/edit_line.cpp"
     )
 
 set(HEADERS
@@ -22,6 +23,7 @@ set(HEADERS
     "${PROJECT_SOURCE_DIR}/panel_manager.hpp"
     "${PROJECT_SOURCE_DIR}/smart_window.hpp"
     "${PROJECT_SOURCE_DIR}/dir_window.hpp"
+    "${PROJECT_SOURCE_DIR}/edit_line.hpp"
     )
 
 #configure_file(

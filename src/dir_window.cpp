@@ -17,7 +17,7 @@ dirWindow::dirWindow(int x, int y, int width, int height, const smartWindow& par
     draw_head();
     //this->redraw(0, true);
 
-    this->redraw(1, true);
+    this->redraw(0, true);
 }
 
 void dirWindow::draw_head()
