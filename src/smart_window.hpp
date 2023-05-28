@@ -32,6 +32,8 @@ class smartWindow
     smartWindow(smartWindow &other) = delete;
     void operator=(const smartWindow&) = delete;
 
+    WINDOW* raw; //raw window pointer to interract with ncurses lib
+
     public:
 
     static smartWindow main;
@@ -45,8 +47,6 @@ class smartWindow
     list<weak_ptr<smartWindow>> neighbours;
 
     list<shared_ptr<smartWindow>> heirs = list<shared_ptr<smartWindow>>();
-
-    WINDOW* raw; //raw window pointer to interract with ncurses lib
 
     chtype getcorner(int x, int y, bool U, bool B, bool L, bool R);
     std::string supress(std::string str, unsigned int to);
