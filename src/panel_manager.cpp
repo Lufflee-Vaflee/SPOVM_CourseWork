@@ -27,8 +27,6 @@ panelManager::panelManager(int x, int y, int width, int height, const smartWindo
     this->registrate_tab(_default.c_str());
     this->cur_tab = tabs.begin();
     this->redraw_tabs();
-
-
 }
 
 void panelManager::registrate_tab(std::string name) 

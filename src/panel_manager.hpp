@@ -81,7 +81,7 @@ class panelManager : public smartWindow
 
         virtual weak_ptr<smartWindow> create(smartWindow& parent) override;
 
-        ~Creator() = default;
+        virtual ~Creator() = default;
     };
 };
 
