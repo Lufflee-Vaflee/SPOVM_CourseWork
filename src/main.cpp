@@ -4,6 +4,7 @@
 #include "filesystem"
 #include <iostream>
 #include "dir_window.hpp"
+#include "edit_line.hpp"
 
 std::string& extract_dir(std::string& path)
 {
@@ -24,6 +25,7 @@ namespace YAExplorer
     std::filesystem::path ROOT_DIR;
 }
 
+
 using namespace YAExplorer;
 
 int main(int argc, char* argv[])
@@ -32,7 +34,6 @@ int main(int argc, char* argv[])
     dir = extract_dir(dir);
     YAExplorer::LAUNCH_DIR = std::filesystem::path(dir);
     YAExplorer::ROOT_DIR = YAExplorer::LAUNCH_DIR.root_directory();
-    
 
 
 
@@ -40,14 +41,20 @@ int main(int argc, char* argv[])
 
     auto& MAIN = smartWindow::main;
 
-    int half_width = MAIN.get_width() / 2;
+    auto builder = editLine::Creator(10, 10, 40, "Hello123456789012345");
 
-    auto temp = panelManager::Creator(0, 1, half_width, MAIN.get_height() - 1);
-    auto left = MAIN.create(temp);
-    temp = panelManager::Creator(half_width - 1, 1, MAIN.get_width() - half_width + 1, smartWindow::main.get_height() - 1);
-    auto right = MAIN.create(temp);
+    std::weak_ptr<editLine> test = std::dynamic_pointer_cast<editLine>(MAIN.create(builder).lock());
+
+    (*test.lock())();
 
 
+
+    //int half_width = MAIN.get_width() / 2;
+
+    //auto temp = panelManager::Creator(0, 1, half_width, MAIN.get_height() - 1);
+    //auto left = MAIN.create(temp);
+    //temp = panelManager::Creator(half_width - 1, 1, MAIN.get_width() - half_width + 1, smartWindow::main.get_height() - 1, ROOT_DIR);
+    //auto right = MAIN.create(temp);
 
     //left.lock()->draw_borders();
     //left.lock()->refresh();

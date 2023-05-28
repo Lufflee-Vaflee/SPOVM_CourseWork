@@ -9,8 +9,6 @@ editLine::editLine(int x, int y, int width, std::string _default, const smartWin
 {
     this->model = _default;
     wmove(this->raw, 0, 1);
-    curs_set(curs_visible);
-    this->refresh();
 }
 
 int editLine::move_cursor_left()
@@ -32,7 +30,7 @@ int editLine::move_cursor_right()
 {
     if((this->get_width() - 2) > model.size())
     {
-        if(this->cursor_position < model.size() - 1)
+        if(this->cursor_position < model.size())
             this->cursor_position++;
     }
     else
@@ -73,10 +71,11 @@ int editLine::insert(char c)
 
 int editLine::erase()
 {
-    this->model = this->model.erase(this->model_display_start + this->cursor_position, 1);
+    if(this->model_display_start + this->cursor_position - 1 >= 0 && this->model_display_start + this->cursor_position - 1 < this->model.size())
+        this->model = this->model.erase(this->model_display_start + this->cursor_position - 1, 1);
 
     if(this->cursor_position == 0 && this->model_display_start != 0)
-        this->model_display_start--;
+        //this->model_display_start--;
 
     return this->model_display_start + this->cursor_position;
 }
@@ -84,15 +83,60 @@ int editLine::erase()
 
 void editLine::redraw()
 {
+    if(this->model_display_start != 0)
+        this->print("*", 0, 0);
+    else
+        this->print(" ", 0, 0);
+    if(this->model.size() - this->model_display_start > this->get_width() - 2)
+        this->print("*", 0, this->get_width() - 1);
+    else
+        this->print(" ", 0, this->get_width() - 1);
+    
     this->print(std::string(this->get_width() - 2, ' '), 0, 1);
     this->print(this->model.substr(this->model_display_start, this->get_width() - 2), 0, 1);
     wmove(this->raw, 0, this->cursor_position + 1);
     this->refresh();
 }
 
+std::string editLine::operator()()
+{
+    curs_set(curs_visible);
+    keypad(stdscr, TRUE);
+    this->redraw();
+    use_extended_names(true);
+    int symb;
+    while((symb = wgetch(stdscr)) != KEY_ENTER)
+    {
+
+        auto t = has_key(KEY_LEFT);
+        t = has_key(KEY_RIGHT);
+        t = has_key(KEY_BACKSPACE);
+        switch (symb)
+        {
+        case KEY_LEFT:
+            this->move_cursor_left();
+            break;
+        case KEY_RIGHT:
+            this->move_cursor_right();
+            break;
+        case KEY_BACKSPACE:
+            this->erase();
+            this->move_cursor_left();
+            break;
+        default:
+            this->insert(*keyname(symb));
+            this->move_cursor_right();
+            break;
+        }
+        this->redraw();
+    }
+
+    curs_set(curs_invisible);
+    return this->model;
+}
+
 editLine::~editLine()
 {
-    curs_set(curs_invisible);
 }
 
 

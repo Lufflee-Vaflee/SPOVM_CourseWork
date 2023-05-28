@@ -62,8 +62,8 @@ std::string entryWindow::readable_time()
 
     // 2 + 1 + 2 + 1 + 4 + 1 + 2 + 1 + 2  + 1 = 17 symb
     readable << std::setfill('0');
-    readable << std::setw(2) <<  day << ":";
-    readable << std::setw(2) << month << ":" << year << " ";
+    readable << std::setw(2) <<  day << ".";
+    readable << std::setw(2) << month << "." << year << " ";
     readable << std::setw(2) << hour << ":";
     readable << std::setw(2) << minute;
     return readable.str();
